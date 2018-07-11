@@ -1,0 +1,7 @@
+*.zip
+/datos
+/logs
+/checkpoints
+/__pycache__
+*.h5
+*.json
