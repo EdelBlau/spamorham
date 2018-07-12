@@ -151,5 +151,9 @@ def train_tf_idf_model(texts, num_max):
     return tok
 
 
-
+# define the predict function for the deep learning model for later use
+def predict(data, model):
+    result=model.predict(data)
+    prediction = [round(x[0]) for x in result]
+    return prediction
 

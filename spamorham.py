@@ -2,6 +2,7 @@ from keras.layers import SimpleRNN, Embedding, Dense, LSTM, Input, Dense, Dropou
 from keras.models import Sequential, model_from_json, Model,load_model
 from keras.preprocessing.text import Tokenizer
 from keras import regularizers
+from keras import backend as K
 from keras.callbacks import ModelCheckpoint, TensorBoard
 
 import pandas as pd
@@ -36,7 +37,7 @@ SOURCES = [
 
 
 sess = tf.Session()
-tf.global_variables_initializer().run(session=sess)
+K.set_session(sess)
 # train your model
 
 
@@ -185,11 +186,7 @@ tensorboard = TensorBoard(log_dir='./logs',
                           write_graph=True,
                           write_images=True)
 
-# define the predict function for the deep learning model for later use
-def predict(data, model):
-    result=model.predict(data)
-    prediction = [round(x[0]) for x in result]
-    return prediction
+
 
 ## Train the model
 # get the compiled model
@@ -228,14 +225,14 @@ def getResults(model_dict,sample_texts,sample_target):
     results_cm={}
     
     for name,model in model_dict.items():
-#         print(name)
         tic1 = time.process_time()
         if name in 'deep_learning':
             predicted_sample = predict(sample_texts, model)
         else:    
             predicted_sample = model.predict(sample_texts)
         toc1 = time.process_time()
-#         print(predicted_sample)
+        print('predicciones')
+        print(predicted_sample)
 
         cm=sklearn.metrics.confusion_matrix(sample_target, predicted_sample)
         results_cm[name]=cm

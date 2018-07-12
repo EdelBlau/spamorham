@@ -18,6 +18,7 @@ import pickle
 import sys
 
 import keras
+import tensorflow as tf 
 
 import sklearn
 from sklearn import metrics
@@ -37,6 +38,7 @@ SOURCES = [
 ]
 
 # load json and create model
+'''
 json_file = open('model.json', 'r')
 loaded_model_json = json_file.read()
 json_file.close()
@@ -49,3 +51,20 @@ print("Loaded model from disk")
 loaded_model.compile(loss='binary_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
 
 print("%s: %.2f%%" % (loaded_model.metrics_names[1]))
+
+'''
+
+model_path = "model/model.ckpt"
+tf.train.NewCheckpointReader(model_path)
+
+with tf.Session() as sess:
+# Initialize variables
+    init = tf.global_variables_initializer()
+    sess.run(init)
+
+    saver = tf.train.import_meta_graph('model/model.ckpt.meta')
+
+# Restore model weights from previously saved model
+    saver.restore(sess, model_path)
+model = load_model('my_model.h5')
+predicted_sample = predict(sample_texts, model)
