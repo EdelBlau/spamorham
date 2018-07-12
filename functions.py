@@ -150,6 +150,46 @@ def train_tf_idf_model(texts, num_max):
     print (" -----total Computation time = " + str((toc - tic)) + " seconds")
     return tok
 
+def getResults(model_dict,sample_texts,sample_target):
+    '''
+    Get results from different models
+    '''
+    results=[]
+    
+    results_cm={}
+    
+    for name,model in model_dict.items():
+        tic1 = time.process_time()
+        if name in 'deep_learning':
+            predicted_sample = predict(sample_texts, model)
+        else:    
+            predicted_sample = model.predict(sample_texts)
+        toc1 = time.process_time()
+        print('predicciones')
+        print(predicted_sample)
+
+        cm=sklearn.metrics.confusion_matrix(sample_target, predicted_sample)
+        results_cm[name]=cm
+        
+        total=len(predicted_sample)
+        TP = cm[0][0]
+        FP = cm[0][1]
+        FN = cm[1][0]
+        TN = cm[1][1]
+        
+        time_taken=round(toc1 - tic1,4)
+        res=sklearn.metrics.precision_recall_fscore_support(sample_target, predicted_sample)
+        results.append([name,np.mean(res[0]),np.mean(res[1]),np.mean(res[2]),total,TP,FP,FN,TN,str(time_taken)] )
+        
+        
+    
+    df_cols=['model','precision','recall','f1_score','Total_samples','TP','FP','FN','TN','execution_time']
+    result_df=pd.DataFrame(results,columns=df_cols)
+    
+    return result_df,results_cm
+
+
+
 
 # define the predict function for the deep learning model for later use
 def predict(data, model):
