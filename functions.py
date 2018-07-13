@@ -25,6 +25,8 @@ from sklearn import svm
 from sklearn.externals import joblib
 from sklearn.preprocessing import LabelEncoder
 
+from keras_text.processing import WordTokenizer
+
 HAM = 'ham'
 SPAM = 'spam'
 SKIP_FILES = {'cmds'}
@@ -95,6 +97,21 @@ def load_data(SOURCES):
     data = data.reindex(np.random.permutation(data.index))
     return data
 
+def load_file(path, label):
+    content = ''
+    if os.path.isfile(path):
+        past_header, lines = False, []
+        f = open(path, encoding="latin-1")
+        for line in f:
+            if past_header:
+                lines.append(line)
+            elif line == NEWLINE:
+                past_header = True
+        f.close()
+        content = NEWLINE.join(lines)
+
+    print(content)
+    return pd.DataFrame([{'text': content, 'label': label,'file':path}], [path])
 
 def token_count(row):
     'returns token count'
@@ -142,9 +159,10 @@ def train_tf_idf_model(texts, num_max):
     "train tf idf model "
     tic = time.process_time()
     
-
     tok = Tokenizer(num_words=num_max)
     tok.fit_on_texts(texts)
+    #tok = WordTokenizer()
+    #tok.build_vocab(texts)
     toc = time.process_time()
 
     print (" -----total Computation time = " + str((toc - tic)) + " seconds")

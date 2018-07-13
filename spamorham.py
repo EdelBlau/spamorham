@@ -31,7 +31,9 @@ from functions import *
 
 SOURCES = [
     ('datos/BG',        "spam"),
+    ('datos/GP',        "spam"),
     ('datos/williams-w3', "ham"),
+    ('datos/kitchen-l', "ham"),
 
 ]
 
@@ -113,6 +115,13 @@ num_max = 4000
 
 texts=list(df_model['tokenized_text'])
 tfidf_model=train_tf_idf_model(texts, num_max)
+
+import pickle
+
+# saving
+with open('tfidf_model.pickle', 'wb') as handle:
+    pickle.dump(tfidf_model, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
 
 # prepare model input data
 mat_texts,tags=prepare_model_input(tfidf_model,df_model,mode='tfidf')
